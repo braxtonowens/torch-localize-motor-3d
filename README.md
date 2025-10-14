@@ -8,37 +8,89 @@
 
 A Python wrapper for localizing flagellar-like motors in tomograms using nnU-Net v2.
 
-This package provides a simple interface to run inference on MRC files using the BYU motor localization solution from the Kaggle competition.
+This package provides a simple interface to run inference on tomograms using the MIC_DKFZ motor localization solution from the BYU - Locating Bacterial Flagellar Motors 2025 Kaggle competition.
+
+## Quick Start
+
+```bash
+# 1. Clone and install
+git clone https://github.com/braxtonowens/torch-localize-motor-3d.git
+cd torch-localize-motor-3d
+pip install -e torch_localize_motor_3d
+
+# 2. Run inference (weights download automatically on first use)
+python -c "
+import mrcfile
+from torch_localize_motor_3d import predict_motor_location
+
+with mrcfile.open('your_tomogram.mrc', permissive=True) as mrc:
+    coords = predict_motor_location(mrc.data)
+    print(f'Found {len(coords)} motors:', coords)
+"
+```
+
+Model weights are automatically downloaded from [Hugging Face](https://huggingface.co/braxtonowens/torch_localize_motor_3d_weights) on first use.
 
 ## Installation
 
+### 1. Install the package
+
 ```bash
-# Clone and install in development mode
 git clone https://github.com/braxtonowens/torch-localize-motor-3d.git
 cd torch-localize-motor-3d
-pip install -e .
+pip install -e torch_localize_motor_3d
 ```
+
+### 2. Model weights (automatic)
+
+Model weights are automatically downloaded from [Hugging Face](https://huggingface.co/braxtonowens/torch_localize_motor_3d_weights) on first use and cached in `~/.cache/torch_localize_motor_3d/checkpoints/`.
+
+To pre-download weights:
+```bash
+python -m torch_localize_motor_3d.download_weights
+```
+
+Or in Python:
+```python
+from torch_localize_motor_3d import get_weights
+get_weights()  # Downloads if not cached
+```
+
+### Requirements
+- **CUDA-capable GPU (required)**
+- Python ≥ 3.10
+- PyTorch with CUDA support
 
 ## Usage
 
 ### Basic Usage
 
 ```python
-from torch_localize_motor_3d import torch_localize_motor_3d
+import mrcfile
+from torch_localize_motor_3d import predict_motor_location
 
-# Run inference on an MRC file
-coords = torch_localize_motor_3d(
-    "my_volume.mrc",
-    ckpt_dir="/path/to/your_trained_model_folder",
-    folds="all",                 # or (0,1,2,3,4)
-    threshold=0.15,
-    nms_radius=3,
-    smooth_sigma=0.0,            # try 1.0–2.0 if peaks are noisy
-    device="cuda:0",             # or "cpu" if no GPU
+# Read MRC file
+with mrcfile.open('tomogram.mrc', permissive=True) as mrc:
+    volume = mrc.data
+
+# Predict motor locations
+coords = predict_motor_location(volume)
+
+print(f"Found {len(coords)} motor(s):")
+for i, (x, y, z) in enumerate(coords):
+    print(f"  Motor {i+1}: x={x}, y={y}, z={z}")
+```
+
+### Advanced Usage
+
+```python
+# Adjust detection parameters
+coords = predict_motor_location(
+    volume,
+    threshold=0.15,      # Lower = more sensitive (more detections)
+    nms_radius=3,        # Larger = fewer duplicate detections
+    smooth_sigma=0.0,    # Try 1.0-2.0 if getting noisy detections
 )
-
-print(f"Found {len(coords)} motor coordinates:")
-print(coords[:10])  # First 10 coordinates (x, y, z)
 ```
 
 ### Example Script
@@ -61,28 +113,28 @@ python test_mrc_reading.py
 
 ## Parameters
 
-- `mrc_path`: Path to the MRC file
-- `ckpt_dir`: Path to the nnU-Net training output folder
-- `folds`: "all" or iterable of fold indices (default: "all")
-- `threshold`: Threshold for peak detection (default: 0.15)
-- `nms_radius`: Radius for non-maximum suppression (default: 3)
-- `smooth_sigma`: Gaussian smoothing sigma, 0 = no smoothing (default: 0.0)
-- `device`: Device to use, e.g., "cuda:0" or "cpu" (default: None for auto)
-- `resample_like_training`: Whether to resample to match training scale (default: True)
-- `return_int`: Whether to return integer coordinates (default: True)
+- `volume`: 3D numpy array (Z, Y, X) from MRC file
+- `threshold`: Probability threshold for detection (default: 0.15, range: 0.0-1.0)
+  - Lower values = more sensitive (more detections, more false positives)
+  - Higher values = more specific (fewer detections, fewer false positives)
+- `nms_radius`: Non-maximum suppression radius in voxels (default: 3)
+  - Prevents duplicate detections of the same motor
+  - Increase if motors are detected multiple times in close proximity
+- `smooth_sigma`: Gaussian smoothing sigma (default: 0.0)
+  - Set to 1.0-2.0 if getting noisy/duplicate detections
+  - 0.0 = no smoothing
+- `ckpt_dir`: Custom checkpoint directory (optional, uses default cache if None)
 
-## Requirements
+## Output
 
-- Python ≥ 3.10
-- PyTorch
-- NumPy
-- SciPy
-- mrcfile
-- nnU-Net v2 (installed from the BYU solution repository)
+Returns a numpy array of shape `(N, 3)` where:
+- N = number of detected motors
+- Each row is `[x, y, z]` coordinates in the original volume space
+- Coordinates are integers (voxel indices)
 
-## Model Requirements
+## Model Details
 
-You need a trained nnU-Net v2 model from the BYU motor localization solution. The model should be trained on the bacterial flagellar motor dataset and saved in the standard nnU-Net output format.
+This package uses a trained nnU-Net v2 model from the MIC_DKFZ solution to the BYU - Locating Bacterial Flagellar Motors 2025 Kaggle competition. The model was trained on bacterial flagellar motor tomograms and achieves state-of-the-art detection performance.
 
 ## Development
 

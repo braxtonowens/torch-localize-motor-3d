@@ -1,4 +1,5 @@
-import torch_localize_motor_3d
+import numpy as np
+import pytest
 
 
 def test_imports_with_version():

@@ -7,6 +7,9 @@ build-backend = "hatchling.build"
 [tool.hatch.version]
 source = "vcs"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 # read more about configuring hatch at:
 # https://hatch.pypa.io/latest/config/build/
 [tool.hatch.build.targets.wheel]
@@ -40,6 +43,9 @@ dependencies = [
     "torch",
     "scipy",
     "mrcfile",
+    "matplotlib",
+    "huggingface-hub",
+    "edt>=2.3",
     "nnunetv2 @ git+https://github.com/braxtonowens/kaggle_BYU_Locating_Bacterial-Flagellar_Motors_2025_solution.git",
 ]
 

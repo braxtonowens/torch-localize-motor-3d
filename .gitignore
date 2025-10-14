@@ -109,3 +109,17 @@ ENV/
 # IDE settings
 .vscode/
 .idea/
+
+# Local test files
+example_usage.py
+local.mrc
+motor_coordinates.txt
+motor_visualization.png
+test_mrc_reading.py
+byu_motor_infer_direct.py
+
+# Example files and outputs
+example_usage.py
+local.mrc
+motor_coordinates.txt
+motor_visualization.png

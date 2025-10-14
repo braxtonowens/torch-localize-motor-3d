@@ -9,6 +9,7 @@ except PackageNotFoundError:
 __author__ = "Braxton Owens"
 __email__ = "cbraxtonowens@gmail.com"
 
-from .byu_motor_infer_direct import torch_localize_motor_3d
+from .download_weights import get_weights
+from .torch_localize_motor_3d import predict_motor_location
 
-__all__ = ["torch_localize_motor_3d"]
+__all__ = ["predict_motor_location", "get_weights"]

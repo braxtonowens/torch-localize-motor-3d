@@ -17,16 +17,16 @@ This package provides a simple interface to run inference on tomograms using the
 git clone https://github.com/braxtonowens/torch-localize-motor-3d.git
 cd torch-localize-motor-3d
 pip install -e torch_localize_motor_3d
+```
 
+```python
 # 2. Run inference (weights download automatically on first use)
-python -c "
 import mrcfile
 from torch_localize_motor_3d import predict_motor_location
 
 with mrcfile.open('your_tomogram.mrc', permissive=True) as mrc:
     coords = predict_motor_location(mrc.data)
     print(f'Found {len(coords)} motors:', coords)
-"
 ```
 
 Model weights are automatically downloaded from [Hugging Face](https://huggingface.co/braxtonowens/torch_localize_motor_3d_weights) on first use.
@@ -93,24 +93,6 @@ coords = predict_motor_location(
 )
 ```
 
-### Example Script
-
-Run the provided example script:
-
-```bash
-python example_usage.py
-```
-
-Make sure to update the `ckpt_dir` path in the script to point to your trained nnU-Net model directory.
-
-### Test MRC Reading
-
-To test if MRC file reading works correctly:
-
-```bash
-python test_mrc_reading.py
-```
-
 ## Parameters
 
 - `volume`: 3D numpy array (Z, Y, X) from MRC file
@@ -135,28 +117,3 @@ Returns a numpy array of shape `(N, 3)` where:
 ## Model Details
 
 This package uses a trained nnU-Net v2 model from the MIC_DKFZ solution to the BYU - Locating Bacterial Flagellar Motors 2025 Kaggle competition. The model was trained on bacterial flagellar motor tomograms and achieves state-of-the-art detection performance.
-
-## Development
-
-The easiest way to get started is to use the [github cli](https://cli.github.com)
-and [uv](https://docs.astral.sh/uv/getting-started/installation/):
-
-```sh
-gh repo fork braxtonowens/torch-localize-motor-3d --clone
-# or just
-# gh repo clone braxtonowens/torch-localize-motor-3d
-cd torch-localize-motor-3d
-uv sync
-```
-
-Run tests:
-
-```sh
-uv run pytest
-```
-
-Lint files:
-
-```sh
-uv run pre-commit run --all-files
-```

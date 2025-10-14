@@ -1,0 +1,11 @@
+# Do not edit - changes here will be overwritten by Copier
+_commit: v1
+_src_path: gh:pydev-guide/pyrepo-copier
+author_email: cbraxtonowens@gmail.com
+author_name: Braxton Owens
+github_username: braxtonowens
+mode: tooling
+module_name: torch_localize_motor_3d
+project_name: torch-localize-motor-3d
+project_short_description: localizes flagellar-like motors in tomograms
+

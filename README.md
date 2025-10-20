@@ -24,9 +24,8 @@ pip install -e . #this takes a few minutes
 import mrcfile
 from torch_localize_motor_3d import predict_motor_location
 
-with mrcfile.open('your_tomogram.mrc', permissive=True) as mrc:
-    coords = predict_motor_location(mrc.data)
-    print(f'Found {len(coords)} motors:', coords)
+coords = predict_motor_location(mrcfile.read('yourtomogram.mrc'))
+print(f'Found {len(coords)} motors:', coords)
 ```
 
 Model weights are automatically downloaded from [Hugging Face](https://huggingface.co/braxtonowens/torch_localize_motor_3d_weights) on first use.

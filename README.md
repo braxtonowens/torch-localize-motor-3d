@@ -16,7 +16,7 @@ This package provides a simple interface to run inference on tomograms using the
 # 1. Clone and install
 git clone https://github.com/braxtonowens/torch-localize-motor-3d.git
 cd torch-localize-motor-3d
-pip install -e .
+pip install -e . #this takes a few minutes
 ```
 
 ```python
